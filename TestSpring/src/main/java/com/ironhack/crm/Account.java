@@ -1,0 +1,107 @@
+package com.ironhack.crm;
+
+import java.util.List;
+import java.util.Objects;
+
+public class Account {
+
+    private static int count = 0;
+
+    private final int id;
+    private Industry industry;
+    private int employeeCount;
+    private String city;
+    private String country;
+    private List<Contact> contactList;
+    private List<Opportunity> opportunityList;
+
+    public Account() {
+        this.id = ++count;
+    }
+
+    public Account(Industry industry, int employeeCount, String city, String country) {
+        this.id = ++count;
+        this.industry = industry;
+        this.employeeCount = employeeCount;
+        this.city = city;
+        this.country = country;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public Industry getIndustry() {
+        return industry;
+    }
+
+    public void setIndustry(Industry industry) {
+        this.industry = industry;
+    }
+
+    public int getEmployeeCount() {
+        return employeeCount;
+    }
+
+    public void setEmployeeCount(int employeeCount) {
+        this.employeeCount = employeeCount;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public List<Contact> getContactList() {
+        return contactList;
+    }
+
+    public void setContactList(List<Contact> contactList) {
+        this.contactList = contactList;
+    }
+
+    public List<Opportunity> getOpportunityList() {
+        return opportunityList;
+    }
+
+    public void setOpportunityList(List<Opportunity> opportunityList) {
+        this.opportunityList = opportunityList;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Account account = (Account) o;
+        return Objects.equals(getIndustry(), account.getIndustry()) &&
+                Objects.equals(getEmployeeCount(), account.getEmployeeCount()) &&
+                Objects.equals(getCity(), account.getCity()) &&
+                Objects.equals(getCountry(), account.getCountry());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getIndustry(), getEmployeeCount(), getCity(), getCountry());
+    }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "industry=" + industry +
+                ", employeeCount=" + employeeCount +
+                ", city='" + city + '\'' +
+                ", country='" + country + '\'' +
+                '}';
+    }
+}

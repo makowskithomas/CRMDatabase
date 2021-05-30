@@ -1,22 +1,42 @@
 package com.ironhack.crm;
 
+import javax.persistence.*;
 import java.util.Objects;
 
+@Entity
 public class Opportunity {
-    private static int count = 0;
 
-    private final int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Column(columnDefinition = "ENUM('HYBRID', 'FLATBED','BOX')")
+    @Enumerated(EnumType.STRING)
     private Product product;
     private int quantity;
-    private Contact decisionMaker;
+
+
+    @Column(columnDefinition = "ENUM('OPEN','CLOSED_WON','CLOSED_LOST')")
+    @Enumerated(EnumType.STRING)
     private Status status;
 
+    @ManyToOne
+    @JoinColumn(name="sales_rep")
+    private SalesRep salesRep;
+
+    @OneToOne
+    @JoinColumn(name = "decision_maker")
+    private Contact decisionMaker;
+
+    @ManyToOne
+    @JoinColumn(name="account_id")
+    private Account account;
+
+
     public Opportunity() {
-        this.id = ++count;
     }
 
     public Opportunity(Product product, int quantity, Contact decisionMaker, Status status) {
-        this.id = ++count;
         this.product = product;
         this.quantity = quantity;
         this.decisionMaker = decisionMaker;

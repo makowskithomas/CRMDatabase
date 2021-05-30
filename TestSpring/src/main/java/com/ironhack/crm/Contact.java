@@ -1,23 +1,32 @@
 package com.ironhack.crm;
 
+import javax.persistence.*;
 import java.util.Objects;
 
+@Entity
 public class Contact {
 
-    private static int count = 0;
-
-    private final int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
     private String name;
     private String phoneNumber;
     private String email;
     private String companyName;
 
+
+    @ManyToOne
+    @JoinColumn(name = "opportunity_id")
+    private Opportunity opportunity;
+
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
+
     public Contact() {
-        this.id = ++count;
     }
 
     public Contact(String name, String phoneNumber, String email, String companyName) {
-        this.id = ++count;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
@@ -25,7 +34,6 @@ public class Contact {
     }
 
     public Contact(Lead lead) {
-        this.id = ++count;
         this.name = lead.getName();
         this.phoneNumber = lead.getPhoneNumber();
         this.email = lead.getEmail();

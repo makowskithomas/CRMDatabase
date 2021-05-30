@@ -1,22 +1,31 @@
 package com.ironhack.crm;
 
+import javax.persistence.*;
 import java.util.Objects;
 
+@Entity
+@Table(name = "leads")
 public class Lead {
-    private static int count = 0;
 
-    private final int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
     private String name;
     private String phoneNumber;
     private String email;
     private String companyName;
 
+    @ManyToOne
+    @JoinColumn(name="salesrep_id")
+    private SalesRep salesRep;
+
+
     public Lead() {
-        this.id = ++count;
     }
 
+
+
     public Lead(String name, String phoneNumber, String email, String companyName) {
-        this.id = ++count;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;

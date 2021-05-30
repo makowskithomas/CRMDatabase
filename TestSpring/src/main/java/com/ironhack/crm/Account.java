@@ -1,26 +1,33 @@
 package com.ironhack.crm;
 
+import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
 public class Account {
 
-    private static int count = 0;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-    private final int id;
+    @Column(columnDefinition = "ENUM('PRODUCE', 'ECOMMERCE', 'MANUFACTURING','MEDICAL','OTHER')")
+    @Enumerated(EnumType.STRING)
     private Industry industry;
     private int employeeCount;
     private String city;
     private String country;
+
+    @OneToMany(mappedBy = "id")
     private List<Contact> contactList;
+
+    @OneToMany(mappedBy = "id")
     private List<Opportunity> opportunityList;
 
     public Account() {
-        this.id = ++count;
     }
 
     public Account(Industry industry, int employeeCount, String city, String country) {
-        this.id = ++count;
         this.industry = industry;
         this.employeeCount = employeeCount;
         this.city = city;

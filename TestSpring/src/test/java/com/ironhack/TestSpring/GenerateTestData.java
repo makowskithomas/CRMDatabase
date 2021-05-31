@@ -37,10 +37,21 @@ public class GenerateTestData {
         fileWriter.write("('Sara'),\n");
         fileWriter.write("('Michael'),\n");
         fileWriter.write("('Julia');\n");
+        //Generate Account_Data
+        fileWriter.write("INSERT INTO account (id,city,country,employee_count,industry) VALUES\n");
+        fileWriter.write("(0,'Berlin','Germany',3000,'PRODUCE'),\n");
+        fileWriter.write("(1,'Munich','Germany',5000,'ECOMMERCE'),\n");
+        fileWriter.write("(2,'Frankfurt','Germany',2000,'MANUFACTURING'),\n");
+        fileWriter.write("(3,'Stuttgart','Germany',6000,'MEDICAL'),\n");
+        fileWriter.write("(4,'Hamburg','Germany',6000,'PRODUCE'),\n");
+        fileWriter.write("(5,'Karlsruhe','Germany',1000,'OTHER'),\n");
+        fileWriter.write("(6,'Hannover','Germany',1500,'OTHER'),\n");
+        fileWriter.write("(7,'London','United Kingdom',4000,'ECOMMERCE'),\n");
+        fileWriter.write("(8,'Dortmund','Germany',200,'MEDICAL');\n");
         //Generate Lead_Data
         fileWriter.write("INSERT INTO leads (id,company_name,email,name,phone_number,salesrep_id) VALUES\n");
         for(int i=0;i<MAX_LEAD+1;i++){
-            Integer salesId = (int) Math.floor(Math.random() * 3)+1;
+            Integer salesId = (int) Math.floor(Math.random() * 4)+1;
             Integer randomNumberCompanyName= (int) Math.floor(Math.random() * companyNames.length);
             Integer randomNumberFirstName= (int) Math.floor(Math.random() * firstName.length);
             Integer randomNumberLastName= (int) Math.floor(Math.random() * lastName.length);

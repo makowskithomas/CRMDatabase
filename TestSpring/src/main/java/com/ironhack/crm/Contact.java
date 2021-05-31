@@ -15,9 +15,9 @@ public class Contact {
     private String companyName;
 
 
-    @ManyToOne
-    @JoinColumn(name = "opportunity_id")
-    private Opportunity opportunity;
+//    @ManyToOne
+//    @JoinColumn(name = "opportunity_id")
+//    private Opportunity opportunity;
 
     @ManyToOne
     @JoinColumn(name = "account_id")

@@ -23,6 +23,8 @@ public class Contact {
     @JoinColumn(name = "account_id")
     private Account account;
 
+    
+
     public Contact() {
     }
 

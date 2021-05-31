@@ -36,6 +36,15 @@ public class Opportunity {
     public Opportunity() {
     }
 
+    public Opportunity(Product product, int quantity, Status status, SalesRep salesRep, Contact decisionMaker, Account account) {
+        this.product = product;
+        this.quantity = quantity;
+        this.status = status;
+        this.salesRep = salesRep;
+        this.decisionMaker = decisionMaker;
+        this.account = account;
+    }
+
     public Opportunity(Product product, int quantity, Contact decisionMaker, Status status) {
         this.product = product;
         this.quantity = quantity;

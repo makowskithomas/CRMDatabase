@@ -15,6 +15,7 @@ public class Lead {
     private String email;
     private String companyName;
 
+
     @ManyToOne
     @JoinColumn(name="salesrep_id")
     private SalesRep salesRep;
@@ -23,7 +24,13 @@ public class Lead {
     public Lead() {
     }
 
-
+    public Lead(String name, String phoneNumber, String email, String companyName, SalesRep salesRep) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.companyName = companyName;
+        this.salesRep = salesRep;
+    }
 
     public Lead(String name, String phoneNumber, String email, String companyName) {
         this.name = name;

@@ -46,7 +46,7 @@ public class CLI {
                 displayHelp();
                 break;
             case "new":
-                createNewLead(inputArgs);
+
                 break;
             case "show":
                 showAllLeads(inputArgs);

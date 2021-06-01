@@ -2,6 +2,8 @@ package com.ironhack.cli;
 
 
 import com.ironhack.crm.*;
+import com.ironhack.repository.AccountRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.ironhack.repository.*;
 
 import java.util.*;
@@ -41,7 +43,7 @@ public class CLI {
     public static void handleInput(String input) {
         String[] inputArgs = input.split(" ");
         String command = inputArgs[0];
-        switch(command) {
+        switch (command) {
             case "help":
                 displayHelp();
                 break;
@@ -127,7 +129,7 @@ public class CLI {
         System.out.println("");
         System.out.println("ID                  Name");
         System.out.println("------------------------");
-        for(int id : leadMap.keySet()) {
+        for (int id : leadMap.keySet()) {
             Lead lead = leadMap.get(id);
             System.out.format("%s                  %s%n", lead.getId(), lead.getName());
         }
@@ -152,9 +154,9 @@ public class CLI {
             System.out.println("Email: " + lead.getEmail());
             System.out.println("------------------------");
             mainMenu();
-        } catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
             invalidCommand();
-        } catch(NullPointerException e) {
+        } catch (NullPointerException e) {
             System.out.println("ID not found");
             mainMenu();
         }
@@ -165,22 +167,22 @@ public class CLI {
 
         System.out.println("Enter the opportunity information.");
         System.out.print("Product (Hybrid, Flatbed, or Box): ");
-        while(opp.getProduct() == null) {
+        while (opp.getProduct() == null) {
             try {
                 opp.setProduct(Product.valueOf(scan.nextLine().toUpperCase()));
-            } catch(IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 System.out.println("Invalid selection.");
                 System.out.print("Enter only Hybrid, Flatbed, or Box: ");
             }
         }
 
         System.out.print("Quantity: ");
-        while(opp.getQuantity() <= 0) {
+        while (opp.getQuantity() <= 0) {
             try {
                 opp.setQuantity(Integer.parseInt(scan.nextLine()));
                 if (opp.getQuantity() <= 0)
                     throw new IllegalArgumentException();
-            } catch(IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 System.out.println("Invalid entry.");
                 System.out.print("Enter a positive integer value: ");
             }
@@ -196,22 +198,22 @@ public class CLI {
 
         System.out.println("Enter the account information.");
         System.out.print("Industry: ");
-        while(acct.getIndustry() == null) {
+        while (acct.getIndustry() == null) {
             try {
                 acct.setIndustry(Industry.valueOf(scan.nextLine().toUpperCase()));
-            } catch(IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 System.out.println("Invalid selection.");
                 System.out.print("Enter only Produce, Ecommerce, Manufacturing, Medical, or Other: ");
             }
         }
 
         System.out.print("Employee Count: ");
-        while(acct.getEmployeeCount() <= 0) {
+        while (acct.getEmployeeCount() <= 0) {
             try {
                 acct.setEmployeeCount(Integer.parseInt(scan.nextLine()));
                 if (acct.getEmployeeCount() <= 0)
                     throw new IllegalArgumentException();
-            } catch(IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 System.out.println("Invalid entry.");
                 System.out.print("Enter a positive integer value: ");
             }
@@ -228,6 +230,7 @@ public class CLI {
     }
 
     public static void convertLead(String[] args) {
+
         if (args.length == 1) {
             invalidCommand();
             return;
@@ -239,23 +242,47 @@ public class CLI {
             Contact newContact = new Contact(lead);
             Opportunity newOpp = createOpportunity();
             newOpp.setDecisionMaker(newContact);
-
-            Account acct = createAccount();
-            List<Contact> contactList = new ArrayList<>();
-            contactList.add(newContact);
-            acct.setContactList(contactList);
-
-            List<Opportunity> oppList = new ArrayList<>();
-            oppList.add(newOpp);
-            acct.setOpportunityList(oppList);
-
-            acctList.add(acct);
+            Boolean answerRequired = false;
+            Account acct = null;
+            while (answerRequired == false) {
+                System.out.println("Do you like to create a new Account? (Y/N)");
+                String answer = scan.nextLine().toUpperCase(Locale.ROOT);
+                switch (answer) {
+                    case "Y":
+                        System.out.println("You Choose Yes");
+                        acct = createAccount();
+                        List<Contact> contactList = new ArrayList<>();
+                        contactList.add(newContact);
+                        acct.setContactList(contactList);
+                        List<Opportunity> oppList = new ArrayList<>();
+                        oppList.add(newOpp);
+                        acct.setOpportunityList(oppList);
+                        acctList.add(acct);
+                        answerRequired = true;
+                        break;
+                    case "N":
+                        System.out.println("Please Enter the Account ID to which u want to add the Opportunity:");
+                        Integer accId = Integer.parseInt(scan.nextLine());
+                        try{
+//                            acct = accountRepository.findById(accId);
+                            acct.getOpportunityList().add(newOpp);
+                            acct.getContactList().add(newContact);
+                            answerRequired = true;
+                            break;
+                        }catch (Exception wrongId){
+                            System.out.println("The ID is not existing you will be redirected to the Menu");
+                            break;
+                        }
+                    default:
+                        System.out.println("Please Enter Y or N");
+                }
+            }
             opportunityMap.put(newOpp.getId(), newOpp);
             leadMap.remove(id);
             mainMenu();
         } catch (NumberFormatException e) {
             invalidCommand();
-        } catch(NullPointerException e) {
+        } catch (NullPointerException e) {
             System.out.println("ID not found");
             mainMenu();
         }
@@ -276,7 +303,7 @@ public class CLI {
             mainMenu();
         } catch (NumberFormatException e) {
             invalidCommand();
-        } catch(NullPointerException e) {
+        } catch (NullPointerException e) {
             System.out.println("ID not found");
             mainMenu();
         }

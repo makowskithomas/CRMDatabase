@@ -35,5 +35,6 @@ public class Main implements CommandLineRunner {
     public void run(String... args) throws Exception {
         CLI.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
         //CLI.start();
+        // FIXME Nicht vergessen beim testen CLI.start() auszukommentieren und beim durchlaufen es wieder einzukommentieren
     }
 }

@@ -71,7 +71,7 @@ public class Account {
         this.country = country;
     }
 
-    public Set<Contact> getContactList() {
+    public Set<Contact> getContactSet() {
         return contactList;
     }
 
@@ -79,7 +79,7 @@ public class Account {
         this.contactList = contactList;
     }
 
-    public Set<Opportunity> getOpportunityList() {
+    public Set<Opportunity> getOpportunitySet() {
         return opportunityList;
     }
 

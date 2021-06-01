@@ -47,7 +47,7 @@ public class CLI {
                 displayHelp();
                 break;
             case "new":
-
+                createNewLead(inputArgs);
                 break;
             case "show":
                 showAllLeads(inputArgs);
@@ -114,7 +114,7 @@ public class CLI {
         lead.setCompanyName(scan.nextLine());
 
 //        leadRepository.save(lead); //insert object to leadRepository here
-        leadMap.put(lead.getId(),lead);
+        leadMap.put(lead.getId(), lead);
 
         System.out.println("-------------------------------------");
         mainMenu();
@@ -251,12 +251,8 @@ public class CLI {
                     case "Y":
                         System.out.println("You Choose Yes");
                         acct = createAccount();
-                        Set<Contact> contactList = null;
-                        contactList.add(newContact);
-                        acct.setContactList(contactList);
-                        Set<Opportunity> oppList = null;
-                        oppList.add(newOpp);
-                        acct.setOpportunityList(oppList);
+                        acct.getContactSet().add(newContact);
+                        acct.getOpportunitySet().add(newOpp);
                         accountRepository.save(acct);
                         answerRequired = true;
                         break;
@@ -265,18 +261,12 @@ public class CLI {
                         Integer accId = Integer.parseInt(scan.nextLine());
                         if (accountRepository.findById(accId).isPresent()) {
                             acct = accountRepository.findById(accId).get();
-                            Set<Opportunity> oppListAcct = acct.getOpportunityList();
-                            oppListAcct.add(newOpp);
-                            acct.setOpportunityList(oppListAcct);
-                            Set<Contact> contactListAcct = acct.getContactList();
-                            contactListAcct.add(newContact);
-                            acct.setContactList(contactListAcct);
-//                            acct.getOpportunityList().add(newOpp);
-//                            acct.getContactList().add(newContact);
+                            acct.getContactSet().add(newContact);
+                            acct.getOpportunitySet().add(newOpp);
                             accountRepository.save(acct);
                             answerRequired = true;
                             break;
-                        }else{
+                        } else {
                             System.out.println("There is no Account with this Id");
                             break;
                         }

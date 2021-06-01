@@ -34,6 +34,6 @@ public class Main implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         CLI.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
-        CLI.start();
+//        CLI.start();
     }
 }

@@ -3,6 +3,7 @@ package com.ironhack.crm;
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 public class Account {
@@ -19,10 +20,10 @@ public class Account {
     private String country;
 
     @OneToMany(mappedBy = "id")
-    private List<Contact> contactList;
+    private Set<Contact> contactList;
 
     @OneToMany(mappedBy = "id")
-    private List<Opportunity> opportunityList;
+    private Set<Opportunity> opportunityList;
 
     public Account() {
     }
@@ -70,19 +71,19 @@ public class Account {
         this.country = country;
     }
 
-    public List<Contact> getContactList() {
+    public Set<Contact> getContactList() {
         return contactList;
     }
 
-    public void setContactList(List<Contact> contactList) {
+    public void setContactList(Set<Contact> contactList) {
         this.contactList = contactList;
     }
 
-    public List<Opportunity> getOpportunityList() {
+    public Set<Opportunity> getOpportunityList() {
         return opportunityList;
     }
 
-    public void setOpportunityList(List<Opportunity> opportunityList) {
+    public void setOpportunityList(Set<Opportunity> opportunityList) {
         this.opportunityList = opportunityList;
     }
 

@@ -3,7 +3,6 @@ package com.ironhack.cli;
 
 import com.ironhack.crm.*;
 import com.ironhack.repository.AccountRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.ironhack.repository.*;
 
 import java.util.*;
@@ -114,7 +113,8 @@ public class CLI {
         System.out.print("Company Name: ");
         lead.setCompanyName(scan.nextLine());
 
-        leadRepository.save(lead); //insert object to leadRepository here
+//        leadRepository.save(lead); //insert object to leadRepository here
+        leadMap.put(lead.getId(),lead);
 
         System.out.println("-------------------------------------");
         mainMenu();
@@ -251,26 +251,33 @@ public class CLI {
                     case "Y":
                         System.out.println("You Choose Yes");
                         acct = createAccount();
-                        List<Contact> contactList = new ArrayList<>();
+                        Set<Contact> contactList = null;
                         contactList.add(newContact);
                         acct.setContactList(contactList);
-                        List<Opportunity> oppList = new ArrayList<>();
+                        Set<Opportunity> oppList = null;
                         oppList.add(newOpp);
                         acct.setOpportunityList(oppList);
-                        acctList.add(acct);
+                        accountRepository.save(acct);
                         answerRequired = true;
                         break;
                     case "N":
                         System.out.println("Please Enter the Account ID to which u want to add the Opportunity:");
                         Integer accId = Integer.parseInt(scan.nextLine());
-                        try{
-//                            acct = accountRepository.findById(accId);
-                            acct.getOpportunityList().add(newOpp);
-                            acct.getContactList().add(newContact);
+                        if (accountRepository.findById(accId).isPresent()) {
+                            acct = accountRepository.findById(accId).get();
+                            Set<Opportunity> oppListAcct = acct.getOpportunityList();
+                            oppListAcct.add(newOpp);
+                            acct.setOpportunityList(oppListAcct);
+                            Set<Contact> contactListAcct = acct.getContactList();
+                            contactListAcct.add(newContact);
+                            acct.setContactList(contactListAcct);
+//                            acct.getOpportunityList().add(newOpp);
+//                            acct.getContactList().add(newContact);
+                            accountRepository.save(acct);
                             answerRequired = true;
                             break;
-                        }catch (Exception wrongId){
-                            System.out.println("The ID is not existing you will be redirected to the Menu");
+                        }else{
+                            System.out.println("There is no Account with this Id");
                             break;
                         }
                     default:
@@ -287,6 +294,7 @@ public class CLI {
             mainMenu();
         }
     }
+
 
     public static void changeOppStatus(String[] args) {
         if (args.length == 1) {

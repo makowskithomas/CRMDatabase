@@ -4,11 +4,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Locale;
-
+@ActiveProfiles(profiles = "sebastian")
 @SpringBootTest
 public class GenerateTestData {
 

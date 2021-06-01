@@ -2,16 +2,30 @@ package com.ironhack.cli;
 
 
 import com.ironhack.crm.*;
+import com.ironhack.repository.*;
 
 import java.util.*;
 
 
 public class CLI {
+    private static LeadRepository leadRepository;
+    private static ContactRepository contactRepository;
+    private static OpportunityRepository opportunityRepository;
+    private static AccountRepository accountRepository;
+    private static SalesRepRepository salesRepRepository;
 
     public static Map<Integer, Lead> leadMap = new HashMap<>();
     public static Map<Integer, Opportunity> opportunityMap = new HashMap<>();
     public static List<Account> acctList = new ArrayList<>();
     public static Scanner scan = new Scanner(System.in);
+
+    public static void initRepository(LeadRepository leadRepository, ContactRepository contactRepository, OpportunityRepository opportunityRepository, AccountRepository accountRepository, SalesRepRepository salesRepRepository) {
+        CLI.leadRepository = leadRepository;
+        CLI.contactRepository = contactRepository;
+        CLI.opportunityRepository = opportunityRepository;
+        CLI.accountRepository = accountRepository;
+        CLI.salesRepRepository = salesRepRepository;
+    }
 
     public static void start() {
         System.out.println("Welcome to the CRM application.");
@@ -84,6 +98,7 @@ public class CLI {
 
         Lead lead = new Lead();
 
+
         System.out.println("Enter the lead information.");
         System.out.print("Name: ");
         lead.setName(scan.nextLine());
@@ -97,7 +112,7 @@ public class CLI {
         System.out.print("Company Name: ");
         lead.setCompanyName(scan.nextLine());
 
-        leadMap.put(lead.getId(), lead);
+        leadRepository.save(lead); //insert object to leadRepository here
 
         System.out.println("-------------------------------------");
         mainMenu();

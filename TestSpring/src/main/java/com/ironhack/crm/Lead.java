@@ -21,6 +21,7 @@ public class Lead {
     private SalesRep salesRep;
 
 
+
     public Lead() {
     }
 
@@ -73,6 +74,14 @@ public class Lead {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    public SalesRep getSalesRep() {
+        return salesRep;
+    }
+
+    public void setSalesRep(SalesRep salesRep) {
+        this.salesRep = salesRep;
     }
 
     @Override

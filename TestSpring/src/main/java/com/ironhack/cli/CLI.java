@@ -46,7 +46,10 @@ public class CLI {
                 displayHelp();
                 break;
             case "new":
-
+                createNewLead(inputArgs);
+                break;
+            case "create":
+                createNewSalesrep(inputArgs);
                 break;
             case "show":
                 showAllLeads(inputArgs);
@@ -61,6 +64,9 @@ public class CLI {
             case "close-won":
                 changeOppStatus(inputArgs);
                 break;
+//            case "report":
+//                openReportMenu(inputArgs);
+//                break;
             case "exit":
                 System.exit(0);
                 break;
@@ -79,6 +85,7 @@ public class CLI {
         System.out.println("Valid commands are as follows:");
         System.out.println("");
         System.out.println("help                Displays this help menu");
+        System.out.println("create salesrep     Enters a prompt screen to create a new salesrep");
         System.out.println("new lead            Enters a prompt screen to create a new lead");
         System.out.println("show leads          Displays all leads currently in the system");
         System.out.println("lookup lead <id>    Displays lead details for the given id");
@@ -112,11 +119,35 @@ public class CLI {
         System.out.print("Company Name: ");
         lead.setCompanyName(scan.nextLine());
 
-        leadRepository.save(lead); //insert object to leadRepository here
+        System.out.print("SalesRep Name: ");
+        CLI.setSalesRepforLead(scan.nextLine(), lead, salesRepRepository, leadRepository);
+
+        leadRepository.save(lead);
 
         System.out.println("-------------------------------------");
         mainMenu();
     }
+
+    public static void createNewSalesrep(String[] args) {
+        if (args.length == 1 || !args[1].equals("salesrep")) {
+            invalidCommand();
+            return;
+        }
+
+        SalesRep salesRep = new SalesRep();
+
+
+        System.out.println("Enter the salesrep information.");
+        System.out.print("Name: ");
+        salesRep.setName(scan.nextLine());
+
+        salesRepRepository.save(salesRep); //insert object to salesrepRepository here
+
+        System.out.println("-------------------------------------");
+        mainMenu();
+    }
+
+
 
     public static void showAllLeads(String[] args) {
         if (args.length == 1 || !args[1].equals("leads")) {
@@ -240,7 +271,7 @@ public class CLI {
             Opportunity newOpp = createOpportunity();
             newOpp.setDecisionMaker(newContact);
 
-            Account acct = createAccount();
+            Account acct = createAccount(); //ToDo Methode , ob neuer oder vorhandener Account (Aufgabe 11 und 12)
             List<Contact> contactList = new ArrayList<>();
             contactList.add(newContact);
             acct.setContactList(contactList);
@@ -280,6 +311,25 @@ public class CLI {
             System.out.println("ID not found");
             mainMenu();
         }
+    }
+
+     //   public void openReportMenu(){
+        //salesrep
+
+        //}
+
+    //Testbaren Methoden
+
+    public static void setSalesRepforLead(String input, Lead lead, SalesRepRepository salesRepRepository, LeadRepository leadRepository){
+
+        try{
+
+        lead.setSalesRep(salesRepRepository.getById(Integer.parseInt(input)));
+        leadRepository.save(lead);
+    }
+        catch(IllegalStateException e) {
+        System.out.println("SalesRep not found");
+    }
     }
 
 }

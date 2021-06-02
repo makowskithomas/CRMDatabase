@@ -10,7 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Locale;
 
-@ActiveProfiles(profiles="patrick")
+@ActiveProfiles(profiles="maxi")
 @SpringBootTest
 public class GenerateTestData {
 

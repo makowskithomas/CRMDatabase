@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ActiveProfiles(profiles = "patrick")
+@ActiveProfiles(profiles = "maxi")
 @SpringBootTest
 class AccountRepositoryTest {
 

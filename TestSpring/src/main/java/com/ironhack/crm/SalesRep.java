@@ -24,6 +24,12 @@ public class SalesRep {
         this.name = name;
     }
 
+    public SalesRep(String name) {
+        this.name = name;
+    }
+
+    public SalesRep() {
+    }
 
     public int getId() {
         return id;

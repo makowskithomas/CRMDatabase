@@ -56,6 +56,10 @@ public class Opportunity {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public Product getProduct() {
         return product;
     }
@@ -72,6 +76,22 @@ public class Opportunity {
         this.quantity = quantity;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public SalesRep getSalesRep() {
+        return salesRep;
+    }
+
+    public void setSalesRep(SalesRep salesRep) {
+        this.salesRep = salesRep;
+    }
+
     public Contact getDecisionMaker() {
         return decisionMaker;
     }
@@ -80,12 +100,12 @@ public class Opportunity {
         this.decisionMaker = decisionMaker;
     }
 
-    public Status getStatus() {
-        return status;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     @Override

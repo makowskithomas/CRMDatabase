@@ -19,11 +19,14 @@ public class SalesRep {
     private List<Lead> opportunities;
 
 
-    public SalesRep(int id, String name) {
-        this.id = id;
+    public SalesRep(String name) {
+
         this.name = name;
     }
 
+
+    public SalesRep() {
+    }
 
     public int getId() {
         return id;

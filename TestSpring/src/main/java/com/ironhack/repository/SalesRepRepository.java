@@ -32,7 +32,6 @@ public interface SalesRepRepository extends JpaRepository<SalesRep, Integer> {
    @Query(value= "select s.name, count(*) from opportunity o JOIN sales_rep s ON o.sales_rep = s.id where o.status = :status group by s.name", nativeQuery = true)
     List<Object[]> getCountOpportunitiesByStatusAndBySalesRep(@Param("status") String status);
 
-
-
-
+    @Query(value = "select * from sales_rep", nativeQuery = true)
+    List<SalesRep> findAllSalesRep();
 }

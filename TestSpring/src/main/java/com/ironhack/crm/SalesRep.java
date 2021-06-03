@@ -39,4 +39,12 @@ public class SalesRep {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "SalesRep:" +
+                " id=" + id +
+                ", name=" + name +
+                "\n";
+    }
 }

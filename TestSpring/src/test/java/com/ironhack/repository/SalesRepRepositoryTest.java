@@ -17,7 +17,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@ActiveProfiles(profiles = "maxi")
+@ActiveProfiles(profiles = "sebastian")
 class SalesRepRepositoryTest {
 
     @Autowired

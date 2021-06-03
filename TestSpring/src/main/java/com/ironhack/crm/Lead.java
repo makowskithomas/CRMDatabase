@@ -33,13 +33,6 @@ public class Lead {
         this.salesRep = salesRep;
     }
 
-    public Lead(String name, String phoneNumber, String email, String companyName) {
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
-        this.companyName = companyName;
-    }
-
     public int getId() {
         return id;
     }

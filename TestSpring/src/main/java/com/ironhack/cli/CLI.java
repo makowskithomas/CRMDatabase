@@ -419,6 +419,16 @@ public class CLI {
         List<Object[]> objList11 = CLI.opportunityRepository.getCountOpportunitiesByStatusAndByCountry("CLOSED_LOST");
         System.out.println(objectListToString(objList11));
 
+        //--City
+
+        //--Industry
+
+        //--EmployeeCount
+
+        //--Quantity
+
+        //-- Opportunities
+
         mainMenu();
     }
     //Testbaren Methoden

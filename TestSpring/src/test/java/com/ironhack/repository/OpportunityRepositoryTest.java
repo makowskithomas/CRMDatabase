@@ -165,14 +165,20 @@ class OpportunityRepositoryTest {
     public void getCountOpportunitiesByStatusAndByCountry(){
         List<Object[]> objList = opportunityRepository.getCountOpportunitiesByStatusAndByCountry("CLOSED_WON");
         System.out.println(Utils.objectListToString(objList));
-        assertEquals(0, objList.size());
+        assertEquals(5, objList.size());
+
+        assertEquals(BigInteger.valueOf(10),objList.get(0)[1]);
+        assertEquals(BigInteger.valueOf(10),objList.get(1)[1]);
     }
 
     @Test
     public void getOpportunityByCity() {
         List<Object[]> objList = opportunityRepository.getOpportunityByCity();
         System.out.println(Utils.objectListToString(objList));
-        assertEquals(1, objList.size());
+        assertEquals(5, objList.size());
+
+        assertEquals(BigInteger.valueOf(20),objList.get(0)[1]);
+        assertEquals(BigInteger.valueOf(20),objList.get(1)[1]);
     }
 
 
@@ -180,14 +186,21 @@ class OpportunityRepositoryTest {
     public void getCountOpportunitiesByStatusAndByCity(){
         List<Object[]> objList = opportunityRepository.getCountOpportunitiesByStatusAndByCity("CLOSED_WON");
         System.out.println(Utils.objectListToString(objList));
-        assertEquals(0, objList.size());
+        assertEquals(5, objList.size());
+
+        assertEquals(BigInteger.valueOf(10),objList.get(0)[1]);
+        assertEquals(BigInteger.valueOf(10),objList.get(1)[1]);
     }
 
     @Test
     public void getOpportunityByIndustry() {
         List<Object[]> objList = opportunityRepository.getOpportunityByIndustry();
         System.out.println(Utils.objectListToString(objList));
-        assertEquals(1, objList.size());
+        assertEquals(3, objList.size());
+
+        assertEquals(BigInteger.valueOf(60),objList.get(0)[1]);
+        assertEquals(BigInteger.valueOf(20),objList.get(1)[1]);
+        assertEquals(BigInteger.valueOf(20),objList.get(2)[1]);
     }
 
 
@@ -195,56 +208,74 @@ class OpportunityRepositoryTest {
     public void getCountOpportunitiesByStatusAndByIndustry(){
         List<Object[]> objList = opportunityRepository.getCountOpportunitiesByStatusAndByIndustry("CLOSED_WON");
         System.out.println(Utils.objectListToString(objList));
-        assertEquals(0, objList.size());
+        assertEquals(3, objList.size());
+
+        assertEquals(BigInteger.valueOf(30),objList.get(0)[1]);
+        assertEquals(BigInteger.valueOf(10),objList.get(1)[1]);
+        assertEquals(BigInteger.valueOf(10),objList.get(2)[1]);
     }
 
 
     @Test
     void getMeanQuantity() {
         Double test= (double) opportunityRepository.getMeanQuantity();
-        assertEquals(35,test);
+        assertEquals(50.5,test);
     }
 
 
     @Test
     void getMedianQuantity() {
         Double median = Utils.getMedian(opportunityRepository.getListForMedianQuantity());
-        assertEquals(35,median);
+        assertEquals(50.5,median);
+
+        SalesRep salesRep1 = new SalesRep("Karl");
+        salesRepRepository.save(salesRep1);
+        Contact decisionMaker1 = new Contact("Mimi", "030120302200", "mimi@gmail.com", "BASF");
+        contactRepository.save(decisionMaker1);
+        Account account1 = new Account(Industry.ECOMMERCE, 23111, "Ludwigshafen", "Germany");
+        accountRepository.save(account1);
+        Opportunity o1 = new Opportunity(Product.BOX, 20000, Status.OPEN, salesRep1, decisionMaker1, account1);
+        opportunityRepository.save(o1);
+
+        median = Utils.getMedian(opportunityRepository.getListForMedianQuantity());
+        assertEquals(51,median);
+
+        opportunityRepository.deleteById(101);
     }
 
     @Test
     void getMaxQuantity() {
-        assertEquals(35,opportunityRepository.getMaxQuantity());
+        assertEquals(100,opportunityRepository.getMaxQuantity());
     }
 
     @Test
     void getMinQuantity() {
-        assertEquals(35,opportunityRepository.getMinQuantity());
+        assertEquals(1,opportunityRepository.getMinQuantity());
     }
 
 
 
     @Test
     void getMeanOpportunity() {
-        assertEquals(1, opportunityRepository.getMeanOpportunity());
+        assertEquals(20, opportunityRepository.getMeanOpportunity());
     }
 
 
     @Test
     void getMedianOpportunity() {
         Double median = Utils.getMedian(opportunityRepository.getListForMedianOpportunity());
-        assertEquals(1,median);
+        assertEquals(20,median);
     }
 
 
     @Test
     void getMaxOpportunity() {
-        assertEquals(1,opportunityRepository.getMaxOpportunity());
+        assertEquals(20,opportunityRepository.getMaxOpportunity());
     }
 
     @Test
     void getMinOpportunity() {
-        assertEquals(1,opportunityRepository.getMinOpportunity());
+        assertEquals(20,opportunityRepository.getMinOpportunity());
     }
 
 

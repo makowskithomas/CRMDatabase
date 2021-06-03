@@ -1,5 +1,7 @@
 package com.ironhack.utils;
 
+import com.ironhack.crm.Opportunity;
+
 import java.util.List;
 
 public class Utils {
@@ -26,4 +28,13 @@ public class Utils {
         }
         return result;
     }
+
+    public static String oppertunityListToString(List<Opportunity> objList) {
+        String result = "";
+        for(Opportunity opportunity : objList) {
+            result += opportunity.toString() + "\n";
+        }
+        return result;
+    }
+
 }

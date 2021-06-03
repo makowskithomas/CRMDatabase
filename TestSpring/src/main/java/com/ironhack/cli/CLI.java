@@ -9,6 +9,9 @@ import com.ironhack.repository.*;
 import javax.transaction.Transactional;
 import java.util.*;
 
+import static com.ironhack.utils.Utils.objectListToString;
+import static com.ironhack.utils.Utils.oppertunityListToString;
+
 
 public class CLI {
     private static LeadRepository leadRepository;
@@ -374,42 +377,48 @@ public class CLI {
     }
 
     private static void printReports(String[] inputArgs) {
+        //--Reports Salesrep
         System.out.println("Number of leads by Salesreps:" + "\n");
-        try {
-            List<Object[]> objList = CLI.salesRepRepository.getCountLeadsBySalesRep();
-            System.out.println(objectListToString(objList));
-
-        } catch (Exception e) {
-            System.out.println("There are no leads");
-        }
+        List<Object[]> objList = CLI.salesRepRepository.getCountLeadsBySalesRep();
+        System.out.println(objectListToString(objList));
         System.out.println("Number of Opportunities by Salesreps:" + "\n");
-        try {
-            List<Object[]> objList = CLI.salesRepRepository.getCountOpportunitiesBySalesRep();
-            System.out.println(objectListToString(objList));
-        } catch (Exception e) {
-            System.out.println("There are no Opportunities");
-        }
+        List<Object[]> objList1 = CLI.salesRepRepository.getCountOpportunitiesBySalesRep();
+        System.out.println(objectListToString(objList));
         System.out.println("Number of OPEN Opportunities by Salesreps:" + "\n");
-        try {
-            List<Object[]> objList = CLI.salesRepRepository.getCountOpportunitiesByStatusAndBySalesRep("OPEN");
-            System.out.println(objectListToString(objList));
-        } catch (Exception e) {
-            System.out.println("There are no OPEN Opportunities");
-        }
+        List<Object[]> objList2 = CLI.salesRepRepository.getCountOpportunitiesByStatusAndBySalesRep("OPEN");
+        System.out.println(objectListToString(objList));
         System.out.println("Number of WON Opportunities by Salesreps" + "\n");
-        try {
-            List<Object[]> objList = CLI.salesRepRepository.getCountOpportunitiesByStatusAndBySalesRep("CLOSED_WON");
-            System.out.println(objectListToString(objList));
-        } catch (Exception e) {
-            System.out.println("There are no WON Opportunities");
-        }
+        List<Object[]> objList3 = CLI.salesRepRepository.getCountOpportunitiesByStatusAndBySalesRep("CLOSED_WON");
+        System.out.println(objectListToString(objList));
         System.out.println("All LOST Opportunities by Salesrps" + "\n");
-        try {
-            List<Object[]> objList = CLI.salesRepRepository.getCountOpportunitiesByStatusAndBySalesRep("CLOSED_LOST");
-            System.out.println(objectListToString(objList));
-        } catch (Exception e) {
-            System.out.println("There are no LOST Opportunities");
-        }
+        List<Object[]> objList4 = CLI.salesRepRepository.getCountOpportunitiesByStatusAndBySalesRep("CLOSED_LOST");
+        System.out.println(objectListToString(objList));
+
+        //---Product
+        System.out.println("All Opportunities by Product");
+        List<Object[]> objList5 = CLI.opportunityRepository.getOpportunityByProduct();
+        System.out.println(objectListToString(objList));
+        System.out.println("All WON Opportunities");
+        List<Opportunity> objList6 = CLI.opportunityRepository.findAllByStatusWon();
+        System.out.println(oppertunityListToString(objList6));
+        System.out.println("All LOST Opportunities");
+        List<Opportunity> objList7 = CLI.opportunityRepository.findAllByStatusLost();
+        System.out.println(oppertunityListToString(objList7));
+        System.out.println("All OPEN Opportunities");
+        List<Opportunity> objList8 = CLI.opportunityRepository.findAllByStatusOpen();
+        System.out.println(oppertunityListToString(objList8));
+
+        //--Country
+        System.out.println("All Opportunities by Country");
+        List<Object[]> objList9 = CLI.opportunityRepository.getOpportunityByCountry();
+        System.out.println(objectListToString(objList9));
+        System.out.println("All WON Opportunities by Country");
+        List<Object[]> objList10 = CLI.opportunityRepository.getCountOpportunitiesByStatusAndByCountry("CLOSED_WON");
+        System.out.println(objectListToString(objList10));
+        System.out.println("All LOST Opportunities by Country");
+        List<Object[]> objList11 = CLI.opportunityRepository.getCountOpportunitiesByStatusAndByCountry("CLOSED_LOST");
+        System.out.println(objectListToString(objList11));
+
         mainMenu();
     }
     //Testbaren Methoden
@@ -423,14 +432,6 @@ public class CLI {
         } catch (IllegalStateException e) {
             System.out.println("SalesRep not found");
         }
-    }
-
-    public static String objectListToString(List<Object[]> objList) {
-        String result = "";
-        for (Object[] object : objList) {
-            result += object[0] + " " + object[1] + "\n";
-        }
-        return result;
     }
 
 

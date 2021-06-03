@@ -20,6 +20,14 @@ public interface OpportunityRepository extends JpaRepository<Opportunity, Intege
     @Query("from Opportunity where status = ?1")
     List<Opportunity> findAllByStatus(Status status);
 
+    @Query("from Opportunity where status = 'CLOSED_WON'")
+    List<Opportunity> findAllByStatusWon();
+
+    @Query("from Opportunity where status = 'CLOSED_LOST'")
+    List<Opportunity> findAllByStatusLost();
+
+    @Query("from Opportunity where status = 'OPEN'")
+    List<Opportunity> findAllByStatusOpen();
 
     // 1. BY PRODUCT
 

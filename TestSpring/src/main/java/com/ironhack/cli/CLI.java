@@ -2,6 +2,7 @@ package com.ironhack.cli;
 
 
 import com.ironhack.crm.*;
+import com.ironhack.reports.ReportsSalesRep;
 import com.ironhack.repository.AccountRepository;
 import com.ironhack.repository.*;
 
@@ -15,6 +16,7 @@ public class CLI {
     private static OpportunityRepository opportunityRepository;
     private static AccountRepository accountRepository;
     private static SalesRepRepository salesRepRepository;
+
 
     public static Map<Integer, Lead> leadMap = new HashMap<>();
     public static Map<Integer, Opportunity> opportunityMap = new HashMap<>();
@@ -69,8 +71,7 @@ public class CLI {
             case "list":
                 showAllSalesReps(inputArgs);
                 break;
-
-            case "print-report":
+            case "print-reports":
                 printReports(inputArgs);
                 break;
             case "exit":
@@ -80,8 +81,6 @@ public class CLI {
                 invalidCommand();
         }
     }
-
-
 
 
     public static void invalidCommand() {
@@ -130,9 +129,7 @@ public class CLI {
         System.out.print("Company Name: ");
         lead.setCompanyName(scan.nextLine());
 
-        Lead finalLead = setSalesRepInLead(lead);
-
-        leadRepository.save(finalLead);
+        setSalesRepInLead(lead);
 
         System.out.println("-------------------------------------");
         mainMenu();
@@ -168,6 +165,7 @@ public class CLI {
         System.out.println("------------------------");
         mainMenu();
     }
+
     private static void showAllSalesReps(String[] inputArgs) {
         if (inputArgs.length == 1 || !inputArgs[1].equals("salesreps")) {
             invalidCommand();
@@ -305,12 +303,12 @@ public class CLI {
                     case "N":
                         System.out.println("Please Enter the Account ID to which u want to add the Opportunity:");
                         Integer accId = Integer.parseInt(scan.nextLine());
-                        try{
-                        acct = accountRepository.findById(accId).get();
-                        newOpp.setAccount(acct);
-                        answerRequired = true;
-                        break;
-                        }catch (Exception e){
+                        try {
+                            acct = accountRepository.findById(accId).get();
+                            newOpp.setAccount(acct);
+                            answerRequired = true;
+                            break;
+                        } catch (Exception e) {
                             System.out.println("There is no Account under this ID");
                             System.out.println("Do you want to continue enter Yes!");
                             if (scan.nextLine().toUpperCase(Locale.ROOT).equals("YES")) {
@@ -334,7 +332,7 @@ public class CLI {
         }
     }
 
-    public static Lead setSalesRepInLead(Lead lead) {
+    public static void setSalesRepInLead(Lead lead) {
         Lead l1 = lead;
         Boolean needSalesRep = false;
         while (needSalesRep != true) {
@@ -354,7 +352,7 @@ public class CLI {
                 }
             }
         }
-        return l1;
+        CLI.leadRepository.save(l1);
     }
 
     public static void changeOppStatus(String[] args) {
@@ -376,7 +374,43 @@ public class CLI {
     }
 
     private static void printReports(String[] inputArgs) {
-        System.out.println();
+        System.out.println("Number of leads by Salesreps:" + "\n");
+        try {
+            List<Object[]> objList = CLI.salesRepRepository.getCountLeadsBySalesRep();
+            System.out.println(objectListToString(objList));
+
+        } catch (Exception e) {
+            System.out.println("There are no leads");
+        }
+        System.out.println("Number of Opportunities by Salesreps:" + "\n");
+        try {
+            List<Object[]> objList = CLI.salesRepRepository.getCountOpportunitiesBySalesRep();
+            System.out.println(objectListToString(objList));
+        } catch (Exception e) {
+            System.out.println("There are no Opportunities");
+        }
+        System.out.println("Number of OPEN Opportunities by Salesreps:" + "\n");
+        try {
+            List<Object[]> objList = CLI.salesRepRepository.getCountOpportunitiesByStatusAndBySalesRep("OPEN");
+            System.out.println(objectListToString(objList));
+        } catch (Exception e) {
+            System.out.println("There are no OPEN Opportunities");
+        }
+        System.out.println("Number of WON Opportunities by Salesreps" + "\n");
+        try {
+            List<Object[]> objList = CLI.salesRepRepository.getCountOpportunitiesByStatusAndBySalesRep("CLOSED_WON");
+            System.out.println(objectListToString(objList));
+        } catch (Exception e) {
+            System.out.println("There are no WON Opportunities");
+        }
+        System.out.println("All LOST Opportunities by Salesrps" + "\n");
+        try {
+            List<Object[]> objList = CLI.salesRepRepository.getCountOpportunitiesByStatusAndBySalesRep("CLOSED_LOST");
+            System.out.println(objectListToString(objList));
+        } catch (Exception e) {
+            System.out.println("There are no LOST Opportunities");
+        }
+        mainMenu();
     }
     //Testbaren Methoden
 
@@ -389,6 +423,14 @@ public class CLI {
         } catch (IllegalStateException e) {
             System.out.println("SalesRep not found");
         }
+    }
+
+    public static String objectListToString(List<Object[]> objList) {
+        String result = "";
+        for (Object[] object : objList) {
+            result += object[0] + " " + object[1] + "\n";
+        }
+        return result;
     }
 
 

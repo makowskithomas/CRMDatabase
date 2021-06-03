@@ -5,6 +5,7 @@ import com.ironhack.crm.*;
 import com.ironhack.reports.ReportsSalesRep;
 import com.ironhack.repository.AccountRepository;
 import com.ironhack.repository.*;
+import com.ironhack.utils.Utils;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -425,9 +426,26 @@ public class CLI {
 
         //--EmployeeCount
 
-        //--Quantity
+        //--Quantity States
+        Double testZ= (double) CLI.opportunityRepository.getMeanQuantity();
+        System.out.println(testZ);
+        Double medianZ = Utils.getMedian(CLI.opportunityRepository.getListForMedianQuantity());
+        System.out.println(medianZ);
+        Integer getMaxQuantity = CLI.opportunityRepository.getMaxQuantity();
+        System.out.println(getMaxQuantity);
+        Integer getMinQuantity = CLI.opportunityRepository.getMinQuantity();
+        System.out.println(getMinQuantity);
 
-        //-- Opportunities
+        //-- Opportunity States
+        Double doubleZ = CLI.opportunityRepository.getMeanOpportunity();
+        System.out.println(doubleZ);
+        Double medianY = Utils.getMedian(CLI.opportunityRepository.getListForMedianOpportunity());
+        System.out.println(medianY);
+        Integer getMaxOpportunity = CLI.opportunityRepository.getMaxOpportunity();
+        System.out.println(getMaxOpportunity);
+        Integer getMinOpportunity = CLI.opportunityRepository.getMinOpportunity();
+        System.out.println(getMinOpportunity);
+
 
         mainMenu();
     }

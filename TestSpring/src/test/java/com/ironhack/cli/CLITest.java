@@ -1,7 +1,6 @@
 package com.ironhack.cli;
 
-import com.ironhack.crm.Lead;
-import com.ironhack.crm.SalesRep;
+import com.ironhack.crm.*;
 import com.ironhack.repository.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +14,7 @@ import javax.transaction.Transactional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@ActiveProfiles(profiles = "stefan")
+@ActiveProfiles(profiles = "sebastian")
 class CLITest {
 
 
@@ -57,7 +56,17 @@ class CLITest {
 
 
         assertThrows(IllegalArgumentException.class, ()-> CLI.setSalesRepforLead("-41", lead1 , salesRepRepository, leadRepository )  );
-
-
+    }
+    @Test
+    void setNewAccount(){
+        System.out.println("You Choose Yes");
+        Account account1 = new Account(Industry.ECOMMERCE, 23111, "Ludwigshafen", "Germany");
+        SalesRep salesRep1 = new SalesRep("Karl");
+        Contact decisionMaker1 = new Contact("Mimi", "030120302200", "mimi@gmail.com", "BASF");
+        Opportunity o1 = new Opportunity(Product.BOX, 35, Status.OPEN, salesRep1, decisionMaker1, account1);
+        System.out.println(o1.getAccount().getIndustry());
+        Account account2 = new Account(Industry.OTHER, 23111, "Ludwigshafen", "Germany");
+        o1.setAccount(account2);
+        System.out.println(o1.getAccount().getIndustry());
     }
 }

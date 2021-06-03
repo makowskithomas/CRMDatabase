@@ -5,6 +5,7 @@ import com.ironhack.crm.*;
 import com.ironhack.repository.AccountRepository;
 import com.ironhack.repository.*;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 
@@ -259,17 +260,20 @@ public class CLI {
         return acct;
     }
 
+
+    @Transactional
     public static void convertLead(String[] args) {
 
-        if (args.length == 1) {
+        if (args.length == 1 /*||leadRepository.findById(Integer.parseInt(args[0])).isPresent()*/) {
             invalidCommand();
             return;
         }
 
         try {
-            int id = Integer.parseInt(args[1]);
-            Lead lead = leadMap.get(id);
+            Integer id = Integer.parseInt(args[1]);
+            Lead lead = CLI.leadRepository.findById(id).get();
             Contact newContact = new Contact(lead);
+            CLI.contactRepository.save(newContact);
             Opportunity newOpp = createOpportunity();
             newOpp.setDecisionMaker(newContact);
             Boolean answerRequired = false;
@@ -281,9 +285,8 @@ public class CLI {
                     case "Y":
                         System.out.println("You Choose Yes");
                         acct = createAccount();
-                        acct.getContactSet().add(newContact);
-                        acct.getOpportunitySet().add(newOpp);
                         accountRepository.save(acct);
+                        newOpp.setAccount(acct);
                         answerRequired = true;
                         break;
                     case "N":
@@ -291,9 +294,7 @@ public class CLI {
                         Integer accId = Integer.parseInt(scan.nextLine());
                         if (accountRepository.findById(accId).isPresent()) {
                             acct = accountRepository.findById(accId).get();
-                            acct.getContactSet().add(newContact);
-                            acct.getOpportunitySet().add(newOpp);
-                            accountRepository.save(acct);
+                            newOpp.setAccount(acct);
                             answerRequired = true;
                             break;
                         } else {
@@ -304,8 +305,8 @@ public class CLI {
                         System.out.println("Please Enter Y or N");
                 }
             }
-            opportunityMap.put(newOpp.getId(), newOpp);
-            leadMap.remove(id);
+            opportunityRepository.save(newOpp);
+            leadRepository.deleteById(id);
             mainMenu();
         } catch (NumberFormatException e) {
             invalidCommand();

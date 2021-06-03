@@ -3,8 +3,10 @@ package com.ironhack.repository;
 import com.ironhack.crm.Account;
 import com.ironhack.crm.Contact;
 import com.ironhack.crm.Industry;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -14,8 +16,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ActiveProfiles(profiles = "stefan")
+@ActiveProfiles(profiles = {"patrick","maxi","sebastian","janina","stefan"})
 @SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ContactRepositoryTest {
 
     @Autowired
@@ -24,7 +27,7 @@ class ContactRepositoryTest {
     @Autowired
     AccountRepository accountRepository;
 
-    @BeforeEach
+    @BeforeAll
     public void setUp() {
 
         accountRepository.save(new Account(Industry.MEDICAL,3000,"testBerlin","testGermany"));
@@ -44,9 +47,9 @@ class ContactRepositoryTest {
 
     @Test
     @Transactional
-    public void findByName(){
+    public void findById(){
         Contact test1;
-        test1 = contactRepository.findByName("Heinz Schmidt");
-        assertEquals(test1.getEmail(), contactRepository.getById(1).getEmail());
+        test1 = contactRepository.findById(1).get();
+        assertEquals(test1.getEmail(), "Email@Mail.com");
     }
 }

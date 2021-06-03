@@ -2,24 +2,27 @@ package com.ironhack.repository;
 
 import com.ironhack.crm.Account;
 import com.ironhack.crm.Industry;
+import com.ironhack.utils.Utils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+
 
 import javax.transaction.Transactional;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ActiveProfiles(profiles = "maxi")
+@ActiveProfiles(profiles = {"patrick","maxi","sebastian","janina","stefan"})
 @SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AccountRepositoryTest {
 
     @Autowired
     AccountRepository accountRepository;
 
-    @BeforeEach
+    @BeforeAll
     public void setUp(){
         //accountRepository.deleteAll();
         accountRepository.save(new Account(Industry.MEDICAL,3000,"testBerlin","testGermany"));
@@ -51,17 +54,7 @@ class AccountRepositoryTest {
 
     @Test
     void getMedianEmployeeCount() {
-        Integer[] accountList= accountRepository.getListForMedianEmployeeCount();
-        Double median;
-        Integer h1;
-        Integer h2;
-        if(accountList.length % 2 == 0){
-            h1= accountList[(accountList.length/2-1)];
-            h2= accountList[(accountList.length/2)];
-            median= (double) (h1+h2)/2;
-        } else {
-            median= (double) accountList[(int) Math.floor(accountList.length/2)];
-        }
+        Double median = Utils.getMedian(accountRepository.getListForMedianEmployeeCount());
         assertEquals(3000,median);
     }
 
@@ -74,7 +67,5 @@ class AccountRepositoryTest {
     void getMinEmployeeCount() {
         assertEquals(1000,accountRepository.getMinEmployeeCount());
     }
-
-
 
 }

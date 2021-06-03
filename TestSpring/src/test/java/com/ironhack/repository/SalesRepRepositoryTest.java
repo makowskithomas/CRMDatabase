@@ -1,10 +1,9 @@
 package com.ironhack.repository;
 
 import com.ironhack.crm.*;
+import com.ironhack.utils.Utils;
 import org.hibernate.Hibernate;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -17,7 +16,8 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@ActiveProfiles(profiles = "sebastian")
+@ActiveProfiles(profiles = {"patrick","maxi","sebastian","janina","stefan"})
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SalesRepRepositoryTest {
 
     @Autowired
@@ -36,7 +36,7 @@ class SalesRepRepositoryTest {
     AccountRepository accountRepository;
 
 
-    @BeforeEach
+    @BeforeAll
     public void setUp() {
         SalesRep salesRep1 = new SalesRep("Karl");
         salesRepRepository.save(salesRep1);
@@ -71,7 +71,7 @@ class SalesRepRepositoryTest {
     @Test
     public void getCountLeadsBySalesRep() {
         List<Object[]> objList = salesRepRepository.getCountLeadsBySalesRep();
-        System.out.println(objectListToString(objList));
+        System.out.println(Utils.objectListToString(objList));
         assertEquals(2, objList.size());
         assertTrue(objList.get(0)[0].equals("Karl"));
 
@@ -80,38 +80,31 @@ class SalesRepRepositoryTest {
     @Test
     public void getCountOpportunitiesBySalesRep() {
         List<Object[]> objList = salesRepRepository.getCountOpportunitiesBySalesRep();
-        System.out.println(objectListToString(objList));
+        System.out.println(Utils.objectListToString(objList));
         assertEquals(2, objList.size());
     }
 
     @Test
     public void getCountOpportunitiesByStatusAndBySalesRep1() {
         List<Object[]> objList = salesRepRepository.getCountOpportunitiesByStatusAndBySalesRep("OPEN");
-        System.out.println(objectListToString(objList));
+        System.out.println(Utils.objectListToString(objList));
         assertEquals(1, objList.size());
     }
 
     @Test
     public void getCountOpportunitiesByStatusAndBySalesRep2() {
         List<Object[]> objList = salesRepRepository.getCountOpportunitiesByStatusAndBySalesRep("CLOSED_WON");
-        System.out.println(objectListToString(objList));
+        System.out.println(Utils.objectListToString(objList));
         assertEquals(1, objList.size());
     }
 
     @Test
     public void getCountOpportunitiesByStatusAndBySalesRep3() {
         List<Object[]> objList = salesRepRepository.getCountOpportunitiesByStatusAndBySalesRep("CLOSED_LOST");
-        System.out.println(objectListToString(objList));
+        System.out.println(Utils.objectListToString(objList));
         assertEquals(0, objList.size());
     }
 
-    public String objectListToString(List<Object[]> objList){
-        String result= "";
-        for (Object[] object: objList) {
-            result += object[0] + " " + object[1] + "\n";
-        }
-        return result;
-    }
 
 
 }

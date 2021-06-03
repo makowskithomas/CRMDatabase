@@ -66,9 +66,13 @@ public class CLI {
             case "close-won":
                 changeOppStatus(inputArgs);
                 break;
-//            case "report":
-//                openReportMenu(inputArgs);
-//                break;
+            case "list":
+                showAllSalesReps(inputArgs);
+                break;
+
+            case "print-report":
+                printReports(inputArgs);
+                break;
             case "exit":
                 System.exit(0);
                 break;
@@ -76,6 +80,9 @@ public class CLI {
                 invalidCommand();
         }
     }
+
+
+
 
     public static void invalidCommand() {
         System.out.println("Command invalid.");
@@ -87,7 +94,9 @@ public class CLI {
         System.out.println("Valid commands are as follows:");
         System.out.println("");
         System.out.println("help                Displays this help menu");
+        System.out.println("print-reports       Displays all reports");
         System.out.println("create salesrep     Enters a prompt screen to create a new salesrep");
+        System.out.println("list salesreps      Display all salesreps");
         System.out.println("new lead            Enters a prompt screen to create a new lead");
         System.out.println("show leads          Displays all leads currently in the system");
         System.out.println("lookup lead <id>    Displays lead details for the given id");
@@ -121,10 +130,9 @@ public class CLI {
         System.out.print("Company Name: ");
         lead.setCompanyName(scan.nextLine());
 
-        System.out.print("SalesRep Name: ");
-        CLI.setSalesRepforLead(scan.nextLine(), lead, salesRepRepository, leadRepository);
+        Lead finalLead = setSalesRepInLead(lead);
 
-        leadRepository.save(lead);
+        leadRepository.save(finalLead);
 
         System.out.println("-------------------------------------");
         mainMenu();
@@ -150,25 +158,29 @@ public class CLI {
     }
 
 
-
     public static void showAllLeads(String[] args) {
         if (args.length == 1 || !args[1].equals("leads")) {
             invalidCommand();
             return;
         }
-
-        System.out.println("");
-        System.out.println("ID                  Name");
         System.out.println("------------------------");
-        for (int id : leadMap.keySet()) {
-            Lead lead = leadMap.get(id);
-            System.out.format("%s                  %s%n", lead.getId(), lead.getName());
+        System.out.println(CLI.leadRepository.findAllLeads().toString());
+        System.out.println("------------------------");
+        mainMenu();
+    }
+    private static void showAllSalesReps(String[] inputArgs) {
+        if (inputArgs.length == 1 || !inputArgs[1].equals("salesreps")) {
+            invalidCommand();
+            return;
         }
-
+        System.out.println("------------------------");
+        System.out.println(CLI.salesRepRepository.findAllSalesRep().toString());
         System.out.println("------------------------");
         mainMenu();
     }
 
+
+    @Transactional
     public static void leadDetailsById(String[] args) {
         if (args.length == 1 || !args[1].equals("lead")) {
             invalidCommand();
@@ -176,19 +188,20 @@ public class CLI {
         }
 
         try {
-            int id = Integer.parseInt(args[2]);
-            Lead lead = leadMap.get(id);
-            System.out.println("ID: " + lead.getId());
-            System.out.println("Name: " + lead.getName());
-            System.out.println("Company: " + lead.getCompanyName());
-            System.out.println("Phone: " + lead.getPhoneNumber());
-            System.out.println("Email: " + lead.getEmail());
-            System.out.println("------------------------");
+            Integer id = Integer.parseInt(args[2]);
+            Lead lead = CLI.leadRepository.getById(id);
+            if (lead.getName() != null) {
+                System.out.println("ID: " + lead.getId());
+                System.out.println("Name: " + lead.getName());
+                System.out.println("Company: " + lead.getCompanyName());
+                System.out.println("Phone: " + lead.getPhoneNumber());
+                System.out.println("Email: " + lead.getEmail());
+                System.out.println("------------------------");
+            }
             mainMenu();
-        } catch (NumberFormatException e) {
-            invalidCommand();
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             System.out.println("ID not found");
+            // show all leads
             mainMenu();
         }
     }
@@ -264,7 +277,7 @@ public class CLI {
     @Transactional
     public static void convertLead(String[] args) {
 
-        if (args.length == 1 /*||leadRepository.findById(Integer.parseInt(args[0])).isPresent()*/) {
+        if (args.length == 1) {
             invalidCommand();
             return;
         }
@@ -273,8 +286,8 @@ public class CLI {
             Integer id = Integer.parseInt(args[1]);
             Lead lead = CLI.leadRepository.findById(id).get();
             Contact newContact = new Contact(lead);
-            CLI.contactRepository.save(newContact);
             Opportunity newOpp = createOpportunity();
+            newOpp.setSalesRep(lead.getSalesRep());
             newOpp.setDecisionMaker(newContact);
             Boolean answerRequired = false;
             Account acct = null;
@@ -292,69 +305,91 @@ public class CLI {
                     case "N":
                         System.out.println("Please Enter the Account ID to which u want to add the Opportunity:");
                         Integer accId = Integer.parseInt(scan.nextLine());
-                        if (accountRepository.findById(accId).isPresent()) {
-                            acct = accountRepository.findById(accId).get();
-                            newOpp.setAccount(acct);
-                            answerRequired = true;
-                            break;
-                        } else {
-                            System.out.println("There is no Account with this Id");
-                            break;
+                        try{
+                        acct = accountRepository.findById(accId).get();
+                        newOpp.setAccount(acct);
+                        answerRequired = true;
+                        break;
+                        }catch (Exception e){
+                            System.out.println("There is no Account under this ID");
+                            System.out.println("Do you want to continue enter Yes!");
+                            if (scan.nextLine().toUpperCase(Locale.ROOT).equals("YES")) {
+                                answerRequired = false;
+                            } else {
+                                mainMenu();
+                                break;
+                            }
                         }
                     default:
                         System.out.println("Please Enter Y or N");
                 }
             }
+            CLI.contactRepository.save(newContact);
             opportunityRepository.save(newOpp);
             leadRepository.deleteById(id);
             mainMenu();
-        } catch (NumberFormatException e) {
-            invalidCommand();
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             System.out.println("ID not found");
             mainMenu();
         }
     }
 
+    public static Lead setSalesRepInLead(Lead lead) {
+        Lead l1 = lead;
+        Boolean needSalesRep = false;
+        while (needSalesRep != true) {
+            try {
+                System.out.print("SalesRep Id: ");
+                CLI.setSalesRepforLead(scan.nextLine(), l1, salesRepRepository, leadRepository);
+                needSalesRep = true;
+                break;
+            } catch (Exception e) {
+                System.out.println("There is no SalesRep under this ID");
+                System.out.println("Do you want to continue enter Yes!");
+                if (scan.nextLine().toUpperCase(Locale.ROOT).equals("YES")) {
+                    needSalesRep = false;
+                } else {
+                    mainMenu();
+                    break;
+                }
+            }
+        }
+        return l1;
+    }
 
     public static void changeOppStatus(String[] args) {
         if (args.length == 1) {
             invalidCommand();
             return;
         }
-
         try {
-            int id = Integer.parseInt(args[1]);
-            Opportunity opp = opportunityMap.get(id);
-
+            Integer id = Integer.parseInt(args[1]);
+            Opportunity opp = opportunityRepository.getById(id);
             // changes close-lost or close-won to CLOSED_LOST or CLOSED_WON respectively
             opp.setStatus(Status.valueOf(args[0].replace("-", "d_").toUpperCase()));
+            opportunityRepository.save(opp);
             mainMenu();
-        } catch (NumberFormatException e) {
-            invalidCommand();
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             System.out.println("ID not found");
             mainMenu();
         }
     }
 
-     //   public void openReportMenu(){
-        //salesrep
-
-        //}
-
+    private static void printReports(String[] inputArgs) {
+        System.out.println();
+    }
     //Testbaren Methoden
 
-    public static void setSalesRepforLead(String input, Lead lead, SalesRepRepository salesRepRepository, LeadRepository leadRepository){
+    public static void setSalesRepforLead(String input, Lead lead, SalesRepRepository salesRepRepository, LeadRepository leadRepository) {
 
-        try{
+        try {
 
-        lead.setSalesRep(salesRepRepository.getById(Integer.parseInt(input)));
-        leadRepository.save(lead);
+            lead.setSalesRep(salesRepRepository.getById(Integer.parseInt(input)));
+            leadRepository.save(lead);
+        } catch (IllegalStateException e) {
+            System.out.println("SalesRep not found");
+        }
     }
-        catch(IllegalStateException e) {
-        System.out.println("SalesRep not found");
-    }
-    }
+
 
 }

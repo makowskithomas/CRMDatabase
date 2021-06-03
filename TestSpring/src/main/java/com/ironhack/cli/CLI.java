@@ -5,6 +5,7 @@ import com.ironhack.crm.*;
 import com.ironhack.repository.AccountRepository;
 import com.ironhack.repository.*;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 
@@ -259,18 +260,20 @@ public class CLI {
         return acct;
     }
 
+
+    @Transactional
     public static void convertLead(String[] args) {
 
-        if (args.length == 1 ||accountRepository.findById(Integer.parseInt(args[0])).isPresent()) {
+        if (args.length == 1 /*||leadRepository.findById(Integer.parseInt(args[0])).isPresent()*/) {
             invalidCommand();
             return;
         }
 
         try {
-            int id = Integer.parseInt(args[1]);
-            Lead lead = leadRepository.getById(id);
+            Integer id = Integer.parseInt(args[1]);
+            Lead lead = CLI.leadRepository.findById(id).get();
             Contact newContact = new Contact(lead);
-            contactRepository.save(newContact);
+            CLI.contactRepository.save(newContact);
             Opportunity newOpp = createOpportunity();
             newOpp.setDecisionMaker(newContact);
             Boolean answerRequired = false;

@@ -28,13 +28,12 @@ public class Main implements CommandLineRunner {
 
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
-
     }
 
     @Override
     public void run(String... args) throws Exception {
         CLI.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
-        CLI.start();
+       CLI.start();
         // FIXME Nicht vergessen beim testen CLI.start() auszukommentieren und beim durchlaufen es wieder einzukommentieren
     }
 }

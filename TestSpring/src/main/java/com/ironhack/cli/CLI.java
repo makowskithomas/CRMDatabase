@@ -10,7 +10,8 @@ import com.ironhack.utils.Utils;
 import javax.transaction.Transactional;
 import java.util.*;
 
-import static com.ironhack.utils.Utils.*;
+import static com.ironhack.utils.Utils.objectListToString;
+import static com.ironhack.utils.Utils.oppertunityListToString;
 
 
 public class CLI {
@@ -20,10 +21,6 @@ public class CLI {
     private static AccountRepository accountRepository;
     private static SalesRepRepository salesRepRepository;
 
-
-    public static Map<Integer, Lead> leadMap = new HashMap<>();
-    public static Map<Integer, Opportunity> opportunityMap = new HashMap<>();
-    public static List<Account> acctList = new ArrayList<>();
     public static Scanner scan = new Scanner(System.in);
 
     public static void initRepository(LeadRepository leadRepository, ContactRepository contactRepository, OpportunityRepository opportunityRepository, AccountRepository accountRepository, SalesRepRepository salesRepRepository) {
@@ -59,7 +56,16 @@ public class CLI {
                 createNewSalesrep(inputArgs);
                 break;
             case "show":
-                showAllLeads(inputArgs);
+                switch(inputArgs[1].toLowerCase(Locale.ROOT)){
+                    case("leads"):
+                        showAllLeads(inputArgs);
+                        break;
+                    case("salesreps"):
+                        showAllSalesReps(inputArgs);
+                        break;
+                    default:
+                        invalidCommand();
+                }
                 break;
             case "lookup":
                 leadDetailsById(inputArgs);
@@ -71,11 +77,19 @@ public class CLI {
             case "close-won":
                 changeOppStatus(inputArgs);
                 break;
-            case "list":
-                showAllSalesReps(inputArgs);
+            case "mean": case "max": case "min": case "median":
+                menu_quantfunctions(inputArgs);
                 break;
-            case "print-reports":
-                printReports(inputArgs);
+            case "report":
+                menu_report(inputArgs);
+                break;
+            case "masterdata":
+                Utils.masterdata(salesRepRepository,accountRepository,leadRepository,opportunityRepository,contactRepository);
+                mainMenu();
+                break;
+            case "killalldata":
+//                killalldata();
+                mainMenu();
                 break;
             case "exit":
                 System.exit(0);
@@ -96,17 +110,19 @@ public class CLI {
         System.out.println("Valid commands are as follows:");
         System.out.println("");
         System.out.println("help                Displays this help menu");
-        System.out.println("print-reports       Displays all reports");
         System.out.println("create salesrep     Enters a prompt screen to create a new salesrep");
-        System.out.println("list salesreps      Display all salesreps");
         System.out.println("new lead            Enters a prompt screen to create a new lead");
         System.out.println("show leads          Displays all leads currently in the system");
+        System.out.println("show salesreps      Displays all salesreps currently in the system");
         System.out.println("lookup lead <id>    Displays lead details for the given id");
         System.out.println("convert <id>        Converts a lead to an opportunity for the given id");
         System.out.println("close-lost <id>     Changes the status to CLOSED_LOST for the given opportunity id");
         System.out.println("close-won <id>      Changes the status to CLOSED_WON for the given opportunity id");
         System.out.println("exit                Exits the program");
         System.out.println("-------------------------------------");
+        System.out.println("To display all reports type:");
+        System.out.println("1) report lead/opportunity/status by salesrep/the product/country/city/industry");
+        System.out.println("2) mean/median/max/min employeecount/quantity/opportunity");
         mainMenu();
     }
 
@@ -190,7 +206,7 @@ public class CLI {
 
         try {
             Integer id = Integer.parseInt(args[2]);
-            Lead lead = CLI.leadRepository.getById(id);
+            Lead lead = CLI.leadRepository.findById(id).get();
             if (lead.getName() != null) {
                 System.out.println("ID: " + lead.getId());
                 System.out.println("Name: " + lead.getName());
@@ -291,7 +307,7 @@ public class CLI {
             newOpp.setSalesRep(lead.getSalesRep());
             newOpp.setDecisionMaker(newContact);
             Boolean answerRequired = false;
-            Account acct = null;
+            Account acct;
             while (answerRequired == false) {
                 System.out.println("Do you like to create a new Account? (Y/N)");
                 String answer = scan.nextLine().toUpperCase(Locale.ROOT);
@@ -336,12 +352,11 @@ public class CLI {
     }
 
     public static void setSalesRepInLead(Lead lead) {
-        Lead l1 = lead;
         Boolean needSalesRep = false;
         while (needSalesRep != true) {
             try {
                 System.out.print("SalesRep Id: ");
-                CLI.setSalesRepforLead(scan.nextLine(), l1, salesRepRepository, leadRepository);
+                CLI.setSalesRepforLead(scan.nextLine(), lead, salesRepRepository, leadRepository);
                 needSalesRep = true;
                 break;
             } catch (Exception e) {
@@ -355,7 +370,7 @@ public class CLI {
                 }
             }
         }
-        CLI.leadRepository.save(l1);
+        CLI.leadRepository.save(lead);
     }
 
     public static void changeOppStatus(String[] args) {
@@ -365,7 +380,7 @@ public class CLI {
         }
         try {
             Integer id = Integer.parseInt(args[1]);
-            Opportunity opp = opportunityRepository.getById(id);
+            Opportunity opp = opportunityRepository.findById(id).get();
             // changes close-lost or close-won to CLOSED_LOST or CLOSED_WON respectively
             opp.setStatus(Status.valueOf(args[0].replace("-", "d_").toUpperCase()));
             opportunityRepository.save(opp);
@@ -376,110 +391,88 @@ public class CLI {
         }
     }
 
-    private static void printReports(String[] inputArgs) {
-        //--Reports Salesrep
-        System.out.println("Number of leads by Salesreps:" + "\n");
-        List<Object[]> objList = CLI.salesRepRepository.getCountLeadsBySalesRep();
-        System.out.println(objectListToString(objList));
-        System.out.println("Number of Opportunities by Salesreps:" + "\n");
-        List<Object[]> objList1 = CLI.salesRepRepository.getCountOpportunitiesBySalesRep();
-        System.out.println(objectListToString(objList1));
-        System.out.println("Number of OPEN Opportunities by Salesreps:" + "\n");
-        List<Object[]> objList2 = CLI.salesRepRepository.getCountOpportunitiesByStatusAndBySalesRep("OPEN");
-        System.out.println(objectListToString(objList2));
-        System.out.println("Number of WON Opportunities by Salesreps" + "\n");
-        List<Object[]> objList3 = CLI.salesRepRepository.getCountOpportunitiesByStatusAndBySalesRep("CLOSED_WON");
-        System.out.println(objectListToString(objList3));
-        System.out.println("All LOST Opportunities by Salesrps" + "\n");
-        List<Object[]> objList4 = CLI.salesRepRepository.getCountOpportunitiesByStatusAndBySalesRep("CLOSED_LOST");
-        System.out.println(objectListToString(objList4));
+    //New Report Methods
 
-        //---Product
-        System.out.println("All Opportunities by Product");
-        List<Object[]> objList5 = CLI.opportunityRepository.getOpportunityByProduct();
-        System.out.println(objectListToString(objList5));
-        System.out.println("All WON Opportunities");
-        List<Opportunity> objList6 = CLI.opportunityRepository.findAllByStatusWon();
-        System.out.println(oppertunityListToString(objList6));
-        System.out.println("All LOST Opportunities");
-        List<Opportunity> objList7 = CLI.opportunityRepository.findAllByStatusLost();
-        System.out.println(oppertunityListToString(objList7));
-        System.out.println("All OPEN Opportunities");
-        List<Opportunity> objList8 = CLI.opportunityRepository.findAllByStatusOpen();
-        System.out.println(oppertunityListToString(objList8));
-
-        //--Country
-        System.out.println("All Opportunities by Country");
-        List<Object[]> objList9 = CLI.opportunityRepository.getOpportunityByCountry();
-        System.out.println(objectListToString(objList9));
-        System.out.println("All WON Opportunities by Country");
-        List<Object[]> objList10 = CLI.opportunityRepository.getCountOpportunitiesByStatusAndByCountry("CLOSED_WON");
-        System.out.println(objectListToString(objList10));
-        System.out.println("All LOST Opportunities by Country");
-        List<Object[]> objList11 = CLI.opportunityRepository.getCountOpportunitiesByStatusAndByCountry("CLOSED_LOST");
-        System.out.println(objectListToString(objList11));
-
-        //--City
-        System.out.println("Number of Opportunities by City");
-        List<Object[]> objList12 = CLI.opportunityRepository.getOpportunityByCountry();
-        System.out.println(objectListToString(objList12));
-        System.out.println("Number of all WON Opportunities by City");
-        List<Object[]> objList13 = CLI.opportunityRepository.getCountOpportunitiesByStatusAndByCity("CLOSED_WON");
-        System.out.println(objectListToString(objList13));
-        System.out.println("Number of all LOST Opportunities by City");
-        List<Object[]> objList14 = CLI.opportunityRepository.getCountOpportunitiesByStatusAndByCity("CLOSED_LOST");
-        System.out.println(objectListToString(objList14));
-        System.out.println("Number of all LOST Opportunities by City");
-        List<Object[]> objList15 = CLI.opportunityRepository.getCountOpportunitiesByStatusAndByCity("OPEN");
-        System.out.println(objectListToString(objList15));
-        //--Industry
-        System.out.println("Number of all Opportunities by Industry");
-        List<Object[]> objList16 = CLI.opportunityRepository.getOpportunityByIndustry();
-        System.out.println(objectListToString(objList16));
-        System.out.println("Number of all WON Opportunities by Industry");
-        List<Object[]> objList17 = CLI.opportunityRepository.getCountOpportunitiesByStatusAndByIndustry("CLOSED_WON");
-        System.out.println(objectListToString(objList17));
-        System.out.println("Number of all LOST Opportunities by Industry");
-        List<Object[]> objList18 = CLI.opportunityRepository.getCountOpportunitiesByStatusAndByIndustry("CLOSED_LOST");
-        System.out.println(objectListToString(objList18));
-        System.out.println("Number of all OPEN Opportunities by Industry");
-        List<Object[]> objList19 = CLI.opportunityRepository.getCountOpportunitiesByStatusAndByIndustry("OPEN");
-        System.out.println(objectListToString(objList19));
-        //--EmployeeCount
-        System.out.println("The mean quantity of products");
-        System.out.println(opportunityRepository.getMeanOpportunity());
-        System.out.println("The median quantity of products");
-        Integer[] objList20=CLI.opportunityRepository.getListForMedianOpportunity();
-        System.out.println(integerListToString(objList20));
-        System.out.println("The median maximum of products");
-        System.out.println(opportunityRepository.getMaxOpportunity());
-        System.out.println("The median minimum of products");
-        System.out.println(opportunityRepository.getMinOpportunity());
-
-        //--Quantity States
-        Double testZ= (double) CLI.opportunityRepository.getMeanQuantity();
-        System.out.println(testZ);
-        Double medianZ = Utils.getMedian(CLI.opportunityRepository.getListForMedianQuantity());
-        System.out.println(medianZ);
-        Integer getMaxQuantity = CLI.opportunityRepository.getMaxQuantity();
-        System.out.println(getMaxQuantity);
-        Integer getMinQuantity = CLI.opportunityRepository.getMinQuantity();
-        System.out.println(getMinQuantity);
-
-        //-- Opportunity States
-        Double doubleZ = CLI.opportunityRepository.getMeanOpportunity();
-        System.out.println(doubleZ);
-        Double medianY = Utils.getMedian(CLI.opportunityRepository.getListForMedianOpportunity());
-        System.out.println(medianY);
-        Integer getMaxOpportunity = CLI.opportunityRepository.getMaxOpportunity();
-        System.out.println(getMaxOpportunity);
-        Integer getMinOpportunity = CLI.opportunityRepository.getMinOpportunity();
-        System.out.println(getMinOpportunity);
-
-
-        mainMenu();
+    private static void menu_report(String[] inputArgs){
+        //Scan if report statement is correct (third word needs to be a by and length needs to be 3 or 4)
+        if(((inputArgs.length==4)||(inputArgs.length==5))) {
+            if ((inputArgs[2].toLowerCase(Locale.ROOT).equals("by"))) {
+                switch (inputArgs[3].toLowerCase(Locale.ROOT)) {
+                    case "salesrep":
+                        CLI_Report.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
+                        if (CLI_Report.reportBySalesRep(inputArgs[1]) == Boolean.FALSE) {
+                            invalidCommand();
+                        }
+                        break;
+                    case "the":
+                        if (inputArgs[4].equals("product")) {
+                            CLI_Report.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
+                            if (CLI_Report.reportByProduct(inputArgs[1]) == Boolean.FALSE) {
+                                invalidCommand();
+                            }
+                        } else {
+                            invalidCommand();
+                        }
+                        break;
+                    case "country":
+                        CLI_Report.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
+                        if (CLI_Report.reportByCountry(inputArgs[1]) == Boolean.FALSE) {
+                            invalidCommand();
+                        }
+                        ;
+                        break;
+                    case "city":
+                        CLI_Report.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
+                        if (CLI_Report.reportByCity(inputArgs[1]) == Boolean.FALSE) {
+                            invalidCommand();
+                        }
+                        break;
+                    case "industry":
+                        CLI_Report.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
+                        if (CLI_Report.reportByIndustry(inputArgs[1]) == Boolean.FALSE) {
+                            invalidCommand();
+                        }
+                        break;
+                    default:
+                        invalidCommand();
+                }
+                mainMenu();
+            } else {
+                invalidCommand();
+            }
+        } else {
+            invalidCommand();
+        }
     }
 
+    private static void menu_quantfunctions(String[] inputArgs){
+        //Scan if report statement is correct (statements needs to consist of 2 words)
+        if((inputArgs.length==2)){
+            switch(inputArgs[0].toLowerCase(Locale.ROOT)){
+                case "mean":
+                    CLI_Report.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
+                    if(CLI_Report.getMeanOf(inputArgs[1])==Boolean.FALSE){invalidCommand();};
+                    break;
+                case "max":
+                    CLI_Report.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
+                    if(CLI_Report.getMaxOf(inputArgs[1])==Boolean.FALSE){invalidCommand();};
+                    break;
+                case "min":
+                    CLI_Report.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
+                    if(CLI_Report.getMinOf(inputArgs[1])==Boolean.FALSE){invalidCommand();};
+                    break;
+                case "median":
+                    CLI_Report.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
+                    if(CLI_Report.getMedianOf(inputArgs[1])==Boolean.FALSE){invalidCommand();};
+                    break;
+                default:
+                    invalidCommand();
+            }
+            mainMenu();
+        } else {
+            invalidCommand();
+        }
+    }
 
     //Testbaren Methoden
 
@@ -487,12 +480,19 @@ public class CLI {
 
         try {
 
-            lead.setSalesRep(salesRepRepository.getById(Integer.parseInt(input)));
+            lead.setSalesRep(salesRepRepository.findById(Integer.parseInt(input)).get());
             leadRepository.save(lead);
         } catch (IllegalStateException e) {
             System.out.println("SalesRep not found");
         }
     }
 
+//    public static void killalldata(){
+//        leadRepository.deleteAll();
+//        opportunityRepository.deleteAll();
+//        contactRepository.deleteAll();
+//        accountRepository.deleteAll();
+//        salesRepRepository.deleteAll();
+//    }
 
 }

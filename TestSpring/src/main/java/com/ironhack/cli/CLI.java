@@ -10,8 +10,7 @@ import com.ironhack.utils.Utils;
 import javax.transaction.Transactional;
 import java.util.*;
 
-import static com.ironhack.utils.Utils.objectListToString;
-import static com.ironhack.utils.Utils.oppertunityListToString;
+import static com.ironhack.utils.Utils.*;
 
 
 public class CLI {
@@ -384,21 +383,21 @@ public class CLI {
         System.out.println(objectListToString(objList));
         System.out.println("Number of Opportunities by Salesreps:" + "\n");
         List<Object[]> objList1 = CLI.salesRepRepository.getCountOpportunitiesBySalesRep();
-        System.out.println(objectListToString(objList));
+        System.out.println(objectListToString(objList1));
         System.out.println("Number of OPEN Opportunities by Salesreps:" + "\n");
         List<Object[]> objList2 = CLI.salesRepRepository.getCountOpportunitiesByStatusAndBySalesRep("OPEN");
-        System.out.println(objectListToString(objList));
+        System.out.println(objectListToString(objList2));
         System.out.println("Number of WON Opportunities by Salesreps" + "\n");
         List<Object[]> objList3 = CLI.salesRepRepository.getCountOpportunitiesByStatusAndBySalesRep("CLOSED_WON");
-        System.out.println(objectListToString(objList));
+        System.out.println(objectListToString(objList3));
         System.out.println("All LOST Opportunities by Salesrps" + "\n");
         List<Object[]> objList4 = CLI.salesRepRepository.getCountOpportunitiesByStatusAndBySalesRep("CLOSED_LOST");
-        System.out.println(objectListToString(objList));
+        System.out.println(objectListToString(objList4));
 
         //---Product
         System.out.println("All Opportunities by Product");
         List<Object[]> objList5 = CLI.opportunityRepository.getOpportunityByProduct();
-        System.out.println(objectListToString(objList));
+        System.out.println(objectListToString(objList5));
         System.out.println("All WON Opportunities");
         List<Opportunity> objList6 = CLI.opportunityRepository.findAllByStatusWon();
         System.out.println(oppertunityListToString(objList6));
@@ -421,10 +420,41 @@ public class CLI {
         System.out.println(objectListToString(objList11));
 
         //--City
-
+        System.out.println("Number of Opportunities by City");
+        List<Object[]> objList12 = CLI.opportunityRepository.getOpportunityByCountry();
+        System.out.println(objectListToString(objList12));
+        System.out.println("Number of all WON Opportunities by City");
+        List<Object[]> objList13 = CLI.opportunityRepository.getCountOpportunitiesByStatusAndByCity("CLOSED_WON");
+        System.out.println(objectListToString(objList13));
+        System.out.println("Number of all LOST Opportunities by City");
+        List<Object[]> objList14 = CLI.opportunityRepository.getCountOpportunitiesByStatusAndByCity("CLOSED_LOST");
+        System.out.println(objectListToString(objList14));
+        System.out.println("Number of all LOST Opportunities by City");
+        List<Object[]> objList15 = CLI.opportunityRepository.getCountOpportunitiesByStatusAndByCity("OPEN");
+        System.out.println(objectListToString(objList15));
         //--Industry
-
+        System.out.println("Number of all Opportunities by Industry");
+        List<Object[]> objList16 = CLI.opportunityRepository.getOpportunityByIndustry();
+        System.out.println(objectListToString(objList16));
+        System.out.println("Number of all WON Opportunities by Industry");
+        List<Object[]> objList17 = CLI.opportunityRepository.getCountOpportunitiesByStatusAndByIndustry("CLOSED_WON");
+        System.out.println(objectListToString(objList17));
+        System.out.println("Number of all LOST Opportunities by Industry");
+        List<Object[]> objList18 = CLI.opportunityRepository.getCountOpportunitiesByStatusAndByIndustry("CLOSED_LOST");
+        System.out.println(objectListToString(objList18));
+        System.out.println("Number of all OPEN Opportunities by Industry");
+        List<Object[]> objList19 = CLI.opportunityRepository.getCountOpportunitiesByStatusAndByIndustry("OPEN");
+        System.out.println(objectListToString(objList19));
         //--EmployeeCount
+        System.out.println("The mean quantity of products");
+        System.out.println(opportunityRepository.getMeanOpportunity());
+        System.out.println("The median quantity of products");
+        Integer[] objList20=CLI.opportunityRepository.getListForMedianOpportunity();
+        System.out.println(integerListToString(objList20));
+        System.out.println("The median maximum of products");
+        System.out.println(opportunityRepository.getMaxOpportunity());
+        System.out.println("The median minimum of products");
+        System.out.println(opportunityRepository.getMinOpportunity());
 
         //--Quantity States
         Double testZ= (double) CLI.opportunityRepository.getMeanQuantity();
@@ -449,6 +479,8 @@ public class CLI {
 
         mainMenu();
     }
+
+
     //Testbaren Methoden
 
     public static void setSalesRepforLead(String input, Lead lead, SalesRepRepository salesRepRepository, LeadRepository leadRepository) {

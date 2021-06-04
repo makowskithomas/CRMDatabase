@@ -36,5 +36,12 @@ public class Utils {
         }
         return result;
     }
+    public static String integerListToString(Integer[] intList) {
+        String result = "";
+        for(int i = 0; i<intList.length; i++){
+            result+= intList[i]+ "\n";
+        }
+        return result;
+    }
 
 }

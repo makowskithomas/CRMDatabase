@@ -126,6 +126,6 @@ public class Opportunity {
 
     @Override
     public String toString() {
-        return "Opportunity:" + "Product= " + product +" , Quantity= " + quantity + " , Decisionmaker= " + decisionMaker + " , Status= " + status + "\n";
+        return "Opportunity:" + "id=" + id + "Product= " + product +" , Quantity= " + quantity + " , Decisionmaker= " + decisionMaker + " , Status= " + status + "\n";
     }
 }

@@ -103,6 +103,7 @@ public class Lead {
     @Override
     public String toString() {
         return "Lead:"+
+                " id=" + id +
                 " name=" + name +
                 " phoneNumber=" + phoneNumber +
                 " email=" + email +

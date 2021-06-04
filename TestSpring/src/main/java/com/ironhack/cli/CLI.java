@@ -121,7 +121,7 @@ public class CLI {
         System.out.println("-------------------------------------");
         System.out.println("To display all reports type:");
         System.out.println("1) report lead/opportunity/status by salesrep/the product/country/city/industry");
-        System.out.println("2) mean/median/max/min employeecount/quantity/opps");
+        System.out.println("2) mean/median/max/min employeecount/quantity/opportunity");
         mainMenu();
     }
 
@@ -394,34 +394,51 @@ public class CLI {
 
     private static void menu_report(String[] inputArgs){
         //Scan if report statement is correct (third word needs to be a by and length needs to be 3 or 4)
-        if((inputArgs[2].toLowerCase(Locale.ROOT).equals("by")) && ((inputArgs.length==4)||(inputArgs.length==5))){
-            switch(inputArgs[3].toLowerCase(Locale.ROOT)){
-                case "salesrep":
-                    CLI_Report.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
-                    if(CLI_Report.reportBySalesRep(inputArgs[1])==Boolean.FALSE){invalidCommand();}
-                    break;
-                case "the":
-                    if(inputArgs[4].equals("product")){
+        if(((inputArgs.length==4)||(inputArgs.length==5))) {
+            if ((inputArgs[2].toLowerCase(Locale.ROOT).equals("by"))) {
+                switch (inputArgs[3].toLowerCase(Locale.ROOT)) {
+                    case "salesrep":
                         CLI_Report.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
-                        if(CLI_Report.reportByProduct(inputArgs[1])==Boolean.FALSE){invalidCommand();}}
-                        else { invalidCommand();}
-                    break;
-                case "country":
-                    CLI_Report.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
-                    if(CLI_Report.reportByCountry(inputArgs[1])==Boolean.FALSE){invalidCommand();};
-                    break;
-                case "city":
-                    CLI_Report.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
-                    if(CLI_Report.reportByCity(inputArgs[1])==Boolean.FALSE){invalidCommand();}
-                    break;
-                case "industry":
-                    CLI_Report.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
-                    if(CLI_Report.reportByIndustry(inputArgs[1])==Boolean.FALSE){invalidCommand();}
-                    break;
-                default:
-                    invalidCommand();
+                        if (CLI_Report.reportBySalesRep(inputArgs[1]) == Boolean.FALSE) {
+                            invalidCommand();
+                        }
+                        break;
+                    case "the":
+                        if (inputArgs[4].equals("product")) {
+                            CLI_Report.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
+                            if (CLI_Report.reportByProduct(inputArgs[1]) == Boolean.FALSE) {
+                                invalidCommand();
+                            }
+                        } else {
+                            invalidCommand();
+                        }
+                        break;
+                    case "country":
+                        CLI_Report.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
+                        if (CLI_Report.reportByCountry(inputArgs[1]) == Boolean.FALSE) {
+                            invalidCommand();
+                        }
+                        ;
+                        break;
+                    case "city":
+                        CLI_Report.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
+                        if (CLI_Report.reportByCity(inputArgs[1]) == Boolean.FALSE) {
+                            invalidCommand();
+                        }
+                        break;
+                    case "industry":
+                        CLI_Report.initRepository(leadRepository, contactRepository, opportunityRepository, accountRepository, salesRepRepository);
+                        if (CLI_Report.reportByIndustry(inputArgs[1]) == Boolean.FALSE) {
+                            invalidCommand();
+                        }
+                        break;
+                    default:
+                        invalidCommand();
+                }
+                mainMenu();
+            } else {
+                invalidCommand();
             }
-            mainMenu();
         } else {
             invalidCommand();
         }
